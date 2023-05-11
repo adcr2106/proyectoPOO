@@ -1,5 +1,5 @@
 import tkinter as tk
-from Proyecto.informacion_usuario import Usuario
+from Proyecto.Informacion_usuario import Usuario
 
 
 class LoginWindow(tk.Tk):
