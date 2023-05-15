@@ -58,10 +58,22 @@ class AccountWindow(tk.Tk):
         ver_saldo_btn = tk.Button(self, text="Ver saldo", width=20, command=self.ver_saldo)
         ver_saldo_btn.pack()
 
+        cerrar_sesion_btn = tk.Button(self, text="Cerrar sesión", width=20, command=self.cerrar_sesion, bg="red", fg="white")
+        cerrar_sesion_btn.place(relx=1, rely=1, anchor="se", x=-10, y=-10)
+
     def ver_saldo(self):
         # Lógica para mostrar el saldo
         saldo = self.usuario.obtener_saldo()  # Ejemplo: función para obtener el saldo del usuario
         messagebox.showinfo("Saldo", f"Tu saldo es de: {saldo}$")
+
+    def cerrar_sesion(self):
+        # Destruir la ventana actual
+        self.destroy()
+
+        # Volver a la pantalla de inicio de sesión
+        LoginWindow()
+
+
 
 
 if __name__ == "__main__":
