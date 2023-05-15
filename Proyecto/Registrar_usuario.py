@@ -33,7 +33,6 @@ class RegisterWindow(tk.Toplevel):
         self.saldo_btn = tk.Entry(self)
         self.saldo_btn.grid(row=5, column=2, padx=5, pady=5)
 
-
         guardar_info = tk.Button(self, text="Registrarme", command=self.registrar_usuario, width=20)
         guardar_info.grid(row=6, column=2, padx=5, pady=5)
 
@@ -45,5 +44,8 @@ class RegisterWindow(tk.Toplevel):
         verificar_contraseña = self.verificar_contraseña_entry.get()
         saldo = self.saldo_btn.get()
 
-        if self.usuario.guardar_datos(nombre, apellido, email, contraseña, verificar_contraseña, saldo):
-            self.destroy()
+        if not saldo.isdigit():
+            tk.messagebox.showerror("Error", "El saldo debe ser un valor entero")
+        else:
+            if self.usuario.guardar_datos(nombre, apellido, email, contraseña, verificar_contraseña, saldo):
+                self.destroy()
