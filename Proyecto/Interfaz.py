@@ -1,13 +1,16 @@
 import tkinter as tk
-from Proyecto.Informacion_usuario import Usuario
+from tkinter import messagebox
+
+from Proyecto.Registrar_usuario import RegisterWindow
+from Proyecto.informacion_usuario import Usuario
 
 
 class LoginWindow(tk.Tk):
     def __init__(self):
         super().__init__()
-
+        self.usuario = Usuario()
         self.title("Inicio de sesión")
-        self.geometry("500x300")
+        self.geometry("600x300")
 
         tk.Label(self, text="Correo electrónico:").grid(row=0, column=1, padx=5, pady=5)
         self.email_entry = tk.Entry(self)
@@ -23,66 +26,42 @@ class LoginWindow(tk.Tk):
         self.register_button = tk.Button(self, text="Registrarte aquí", command=self.open_register_window, width=20)
         self.register_button.grid(row=3, column=2, padx=5, pady=5)
 
-    def login(self):
-        email = self.email_entry.get()
-        password = self.password_entry.get()
-        self.email_entry.delete(0, tk.END)
-        self.password_entry.delete(0, tk.END)
-
     def open_register_window(self):
         register_window = RegisterWindow(self)
         register_window.mainloop()
 
-
-class RegisterWindow(tk.Toplevel):
-    def __init__(self, master):
-        super().__init__(master)
-
-        self.title("Registro")
-        self.geometry("600x300")
-
-        tk.Label(self, text="Nombre:").grid(row=0, column=1, padx=5, pady=5)
-        self.name_entry = tk.Entry(self)
-        self.name_entry.grid(row=0, column=2, padx=5, pady=5)
-
-        tk.Label(self, text="Apellido:").grid(row=1, column=1, padx=5, pady=5)
-        self.apellido_entry = tk.Entry(self)
-        self.apellido_entry.grid(row=1, column=2, padx=5, pady=5)
-
-        tk.Label(self, text="Email:").grid(row=2, column=1, padx=5, pady=5)
-        self.email_entry = tk.Entry(self)
-        self.email_entry.grid(row=2, column=2, padx=5, pady=5)
-
-        tk.Label(self, text="Contraseña:").grid(row=3, column=1, padx=5, pady=5)
-        self.contraseña_entry = tk.Entry(self)
-        self.contraseña_entry.grid(row=3, column=2, padx=5, pady=5)
-
-        tk.Label(self, text="Confirmar contraseña :").grid(row=4, column=1, padx=5, pady=5)
-        self.verificar_contraseña_entry = tk.Entry(self)
-        self.verificar_contraseña_entry.grid(row=4, column=2, padx=5, pady=5)
-
-        guardar_info = tk.Button(self, text="Registrarme", command=self.registrar_usuario, width=20)
-        guardar_info.grid(row=5, column=2, padx=5, pady=5)
-
-    def registrar_usuario(self):
-        nombre = self.name_entry.get()
-        apellido = self.apellido_entry.get()
+    def login(self):
         email = self.email_entry.get()
-        contraseña = self.contraseña_entry.get()
-        verificar_contraseña = self.verificar_contraseña_entry.get()
-        Usuario.guardar_datos(self, nombre, apellido, email, contraseña, verificar_contraseña)
+        contraseña = self.password_entry.get()
+        if self.usuario.comparar_datos(email, contraseña):
+            self.destroy()
+            AccountWindow()
 
 
 class AccountWindow(tk.Tk):
     def __init__(self):
         super().__init__()
-
+        self.usuario = Usuario()
         self.title("Cuenta bancaria")
-        self.geometry("300x200")
-        tk.Label(self, text="Nombre:").grid(row=0, column=0, padx=5, pady=5)
-        self.name_entry = tk.Entry(self)
-        self.name_entry.grid(row=0, column=1, padx=5, pady=5)
-        # Agregar elementos de la interfaz de usuario de la cuenta bancaria aquí, pendiente
+        self.geometry("600x300")
+        self.configure(bg="blue")  # Establecer el color de fondo en azul
+
+        # Obtener el nombre del usuario del diccionario datos
+        nombre_usuario = self.usuario.datos.get("nombre")
+        apellido_usuario = self.usuario.datos.get("apellido")
+
+        # Agregar un encabezado con el nombre del usuario
+        encabezado_texto = f"Bienvenido a BANCO PAD, {nombre_usuario}, {apellido_usuario}!"
+        encabezado = tk.Label(self, text=encabezado_texto, font=("Arial", 16), bg="blue", fg="white")
+        encabezado.pack(pady=20)
+
+        ver_saldo_btn = tk.Button(self, text="Ver saldo", width=20, command=self.ver_saldo)
+        ver_saldo_btn.pack()
+
+    def ver_saldo(self):
+        # Lógica para mostrar el saldo
+        saldo = self.usuario.obtener_saldo()  # Ejemplo: función para obtener el saldo del usuario
+        messagebox.showinfo("Saldo", f"Tu saldo es de: {saldo}$")
 
 
 if __name__ == "__main__":
