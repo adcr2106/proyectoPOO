@@ -21,18 +21,18 @@ class LoginWindow(tk.Tk):
         fondo_label.place(x=0, y=0, relwidth=1, relheight=1)
 
         boton_estilo = {
-            "background": "blue",  # Color de fondo en azul
-            "foreground": "white",  # Color de texto en blanco
-            "font": ("Arial", 12),  # Fuente en Arial, tamaño 12
+            "background": "blue",  
+            "foreground": "white", 
+            "font": ("Arial", 12),  
             "width": 20
         }
 
-        # Configurar estilo para las etiquetas
+
         etiqueta_estilo = {
-            "background": "blue",  # Color de fondo en azul
-            "foreground": "white",  # Color de texto en blanco
-            "font": ("Times New Roman", 12, "bold"),  # Fuente en Times New Roman, tamaño 12, negrita
-            "relief": "solid"  # Estilo de relieve sólido
+            "background": "blue",  
+            "foreground": "white", 
+            "font": ("Times New Roman", 12, "bold"),  
+            "relief": "solid"  
         }
 
         tk.Label(self, text="Correo electrónico:", **etiqueta_estilo).grid(row=0, column=1, padx=5, pady=5)
@@ -58,8 +58,6 @@ class LoginWindow(tk.Tk):
             **etiqueta_estilo
         )
         info_label.grid(row=0, column=3, rowspan=4, padx=10, pady=10,sticky="nsew")
-
-        # Mantener una referencia al objeto fondo_photo
         self.fondo_photo = fondo_photo
 
     def open_register_window(self):
@@ -80,13 +78,12 @@ class AccountWindow(tk.Tk):
         self.usuario = Usuario()
         self.title("Cuenta bancaria")
         self.geometry("600x300")
-        self.configure(bg="blue")  # Establecer el color de fondo en azul
+        self.configure(bg="blue")  
 
-        # Obtener el nombre del usuario del diccionario datos
         nombre_usuario = self.usuario.datos.get("nombre")
         apellido_usuario = self.usuario.datos.get("apellido")
 
-        # Agregar un encabezado con el nombre del usuario
+
         encabezado_texto = f"Bienvenido a BANCO PAD, {nombre_usuario}, {apellido_usuario}!"
         encabezado = tk.Label(self, text=encabezado_texto, font=("Arial", 16), bg="blue", fg="white")
         encabezado.pack(pady=20)
@@ -98,15 +95,14 @@ class AccountWindow(tk.Tk):
         cerrar_sesion_btn.place(relx=1, rely=1, anchor="se", x=-10, y=-10)
 
     def ver_saldo(self):
-        # Lógica para mostrar el saldo
-        saldo = self.usuario.obtener_saldo()  # Ejemplo: función para obtener el saldo del usuario
+
+        saldo = self.usuario.obtener_saldo() 
         messagebox.showinfo("Saldo", f"Tu saldo es de: {saldo}$")
 
     def cerrar_sesion(self):
-        # Destruir la ventana actual
         self.destroy()
 
-        # Volver a la pantalla de inicio de sesión
+  
         LoginWindow()
 
 
