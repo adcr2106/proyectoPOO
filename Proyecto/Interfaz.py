@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+from PIL import Image, ImageTk
 
 from Proyecto.Registrar_usuario import RegisterWindow
 from Proyecto.informacion_usuario import Usuario
@@ -12,19 +13,54 @@ class LoginWindow(tk.Tk):
         self.title("Inicio de sesión")
         self.geometry("600x300")
 
-        tk.Label(self, text="Correo electrónico:").grid(row=0, column=1, padx=5, pady=5)
+        fondo_image = Image.open("R.jpeg")
+        fondo_photo = ImageTk.PhotoImage(fondo_image)
+
+        # Crear un widget Label para mostrar la imagen de fondo
+        fondo_label = tk.Label(self, image=fondo_photo)
+        fondo_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+        boton_estilo = {
+            "background": "blue",  # Color de fondo en azul
+            "foreground": "white",  # Color de texto en blanco
+            "font": ("Arial", 12),  # Fuente en Arial, tamaño 12
+            "width": 20
+        }
+
+        # Configurar estilo para las etiquetas
+        etiqueta_estilo = {
+            "background": "blue",  # Color de fondo en azul
+            "foreground": "white",  # Color de texto en blanco
+            "font": ("Times New Roman", 12, "bold"),  # Fuente en Times New Roman, tamaño 12, negrita
+            "relief": "solid"  # Estilo de relieve sólido
+        }
+
+        tk.Label(self, text="Correo electrónico:", **etiqueta_estilo).grid(row=0, column=1, padx=5, pady=5)
         self.email_entry = tk.Entry(self)
         self.email_entry.grid(row=0, column=2, padx=5, pady=5)
 
-        tk.Label(self, text="Contraseña:").grid(row=1, column=1, padx=5, pady=5)
+        tk.Label(self, text="Contraseña:", **etiqueta_estilo).grid(row=1, column=1, padx=5, pady=5)
         self.password_entry = tk.Entry(self, show="*")
         self.password_entry.grid(row=1, column=2, padx=5, pady=5)
 
-        self.login_button = tk.Button(self, text="Iniciar sesión", command=self.login, width=20)
+        self.login_button = tk.Button(self, text="Iniciar sesión", command=self.login, **boton_estilo)
         self.login_button.grid(row=2, column=2, padx=5, pady=5)
 
-        self.register_button = tk.Button(self, text="Registrarte aquí", command=self.open_register_window, width=20)
+        self.register_button = tk.Button(self, text="Registrarte aquí", command=self.open_register_window,
+                                         **boton_estilo)
         self.register_button.grid(row=3, column=2, padx=5, pady=5)
+
+        info_label = tk.Label(
+            self,
+            text="Tienes una cuenta en Banco PAD? Si no, regístrate y comienza a tener tu dinero asegurado con nosotros",
+            wraplength=250,
+            justify="right",
+            **etiqueta_estilo
+        )
+        info_label.grid(row=0, column=3, rowspan=4, padx=10, pady=10,sticky="nsew")
+
+        # Mantener una referencia al objeto fondo_photo
+        self.fondo_photo = fondo_photo
 
     def open_register_window(self):
         register_window = RegisterWindow(self)
