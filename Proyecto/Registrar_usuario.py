@@ -1,7 +1,7 @@
 import random
 import tkinter as tk
 from PIL import ImageTk, Image
-from Proyecto.Informacion_usuario import Usuario
+from Proyecto.informacion_usuario import Usuario
 
 
 class RegisterWindow(tk.Toplevel):
@@ -106,3 +106,4 @@ class RegisterWindow(tk.Toplevel):
                                           numero_cuenta):
                 tk.messagebox.showinfo("Registro exitoso", "Se ha registrado con éxito")
                 self.destroy()
+
