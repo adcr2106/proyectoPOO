@@ -158,8 +158,14 @@ class TransferenciaWindow(tk.Toplevel):
                 self.usuario.actualizar_saldo(saldo_nuevo)
 
                 # Realizar lógica adicional para completar la transferencia
-
-                messagebox.showinfo("Transferencia exitosa", "La transferencia se ha realizado exitosamente.")
+                destinatario_usuario = Usuario.obtener_usuario_por_correo(destinatario)
+                if destinatario_usuario:
+                    saldo_destinatario = destinatario_usuario.obtener_saldo()
+                    saldo_destinatario += monto
+                    destinatario_usuario.actualizar_saldo(saldo_destinatario)
+                    messagebox.showinfo("Transferencia exitosa", "La transferencia se ha realizado exitosamente.")
+                else:
+                    messagebox.showerror("Error", "El destinatario no existe.")
 
     def volver(self):
         self.destroy()
