@@ -49,3 +49,14 @@ class Usuario:
     def obtener_saldo(self):
         saldo = self.__class__.datos.get("saldo")
         return saldo
+
+    def actualizar_saldo(self, nuevo_saldo):
+        self.__class__.datos["saldo"] = nuevo_saldo
+
+    @staticmethod #No requiere tener una instancia de la clase para funcionar correctamente.
+    def obtener_usuario_por_correo(correo):
+            if correo in Usuario.datos:
+                return Usuario()
+            else:
+                return None
+
