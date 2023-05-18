@@ -3,10 +3,10 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 
 from Proyecto.Registrar_usuario import RegisterWindow
-from Proyecto.Informacion_usuario import Usuario
+from Proyecto.informacion_usuario import Usuario
 
 
-class LoginWindow(tk.Tk):
+class PrincipalWindow(tk.Tk):
     def __init__(self):
         super().__init__()
         self.usuario = Usuario()
@@ -87,22 +87,26 @@ class AccountWindow(tk.Tk):
         encabezado.pack(pady=20)
 
         ver_saldo_btn = tk.Button(self, text="Ver saldo", width=20, command=self.ver_saldo)
-        ver_saldo_btn.pack(pady=10, side="top")
+        ver_saldo_btn.pack(pady=10, anchor="center")
 
         hacer_transferencia_btn = tk.Button(self, text="Hacer transferencia", width=20,
                                             command=self.hacer_transferencia)
-        hacer_transferencia_btn.pack(pady=10, side="top")
+        hacer_transferencia_btn.pack(pady=10, anchor="center")
 
-        actualizar_datos_btn = tk.Button(self, text="Actualizar Datos", width=20, command=self.actualizar_datos)
-        actualizar_datos_btn.pack(pady=10, side="top")
+        hacer_retiro_btn = tk.Button(self, text="Hacer retiro", width=20, command=self.hacer_retiro)
+        hacer_retiro_btn.pack(pady=10, anchor="center")
 
-        cerrar_sesion_btn = tk.Button(self, text="Cerrar sesión", width=20, command=self.cerrar_sesion, bg="red", fg="white")
+        cerrar_sesion_btn = tk.Button(self, text="Cerrar sesión", width=20, command=self.cerrar_sesion, bg="red",
+                                      fg="white")
         cerrar_sesion_btn.pack(side=tk.LEFT, padx=10, pady=10, anchor="sw")
 
         numero_cuenta = self.usuario.datos.get("numero_cuenta")
-        numero_cuenta_label = tk.Label(self, text=f"Número de cuenta: {numero_cuenta}", font=("Arial", 12), bg="blue",
-                               fg="white")
+        numero_cuenta_label = tk.Label(self, text=f"# de cuenta: {numero_cuenta}", font=("Arial", 12), bg="blue",
+                                       fg="white")
         numero_cuenta_label.place(relx=1, rely=1, anchor="se", x=-10, y=-10)
+
+        actualizar_datos_btn = tk.Button(self, text="Actualizar Datos", width=20, command=self.actualizar_datos)
+        actualizar_datos_btn.pack(pady=10, anchor="center")
 
     def ver_saldo(self):
         saldo = self.usuario.obtener_saldo()
@@ -112,13 +116,17 @@ class AccountWindow(tk.Tk):
         transferencia_window = TransferenciaWindow(self)
         transferencia_window.mainloop()
 
+    def hacer_retiro(self):
+        retiro_window = VentanaRetiro(self)
+        retiro_window.mainloop()
+
     def actualizar_datos(self):
         actualizar_window = ActualizarDatosWindow(self)
         actualizar_window.mainloop()
 
     def cerrar_sesion(self):
         self.destroy()
-        LoginWindow()
+        PrincipalWindow()
 
 
 class TransferenciaWindow(tk.Toplevel):
@@ -160,22 +168,87 @@ class TransferenciaWindow(tk.Toplevel):
             if monto > saldo_actual:
                 messagebox.showerror("Error", "No tienes suficiente saldo para realizar la transferencia.")
             else:
-                # Restar el monto transferido al saldo actual
-                saldo_nuevo = saldo_actual - monto
-                self.usuario.actualizar_saldo(saldo_nuevo)
-
-                # Realizar lógica adicional para completar la transferencia
-                destinatario_usuario = Usuario.obtener_usuario_por_correo(destinatario)
-                if destinatario_usuario:
-                    saldo_destinatario = destinatario_usuario.obtener_saldo()
-                    saldo_destinatario += monto
-                    destinatario_usuario.actualizar_saldo(saldo_destinatario)
-                    messagebox.showinfo("Transferencia exitosa", "La transferencia se ha realizado exitosamente.")
-                else:
-                    messagebox.showerror("Error", "El destinatario no existe.")
+                self.usuario.realizar_transferencia(destinatario, monto)
+                messagebox.showinfo("Transferencia exitosa",
+                                    f"Se ha transferido {monto}$ al destinatario {destinatario}.")
+                self.destinatario_entry.delete(0, tk.END)
+                self.monto_entry.delete(0, tk.END)
 
     def volver(self):
         self.destroy()
+
+
+class VentanaRetiro(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.usuario = parent.usuario
+        self.title("Retirar dinero")
+        self.geometry("600x300")
+        self.configure(bg="blue")
+
+        tk.Label(self, text="Monto a retirar:", font=("Arial", 12), bg="blue", fg="white").pack()
+        self.monto_entry = tk.Entry(self, font=("Arial", 12))
+        self.monto_entry.pack()
+
+        retirar_button = tk.Button(self, text="Retirar", command=self.retirar, bg="blue", fg="white",
+                                   font=("Arial", 12))
+        retirar_button.pack()
+        volver_button = tk.Button(self, text="Volver", command=self.volver, bg="blue", fg="white",
+                                  font=("Arial", 12))
+        volver_button.pack()
+
+    def retirar(self):
+        monto = self.monto_entry.get()
+
+        # Verificar si el monto es válido
+        if not monto:
+            messagebox.showerror("Error", "Debe ingresar el monto a retirar.")
+        elif not monto.isdigit():
+            messagebox.showerror("Error", "El monto debe ser un valor numérico.")
+        else:
+            monto = int(monto)
+            saldo_actual = self.usuario.obtener_saldo()
+
+            # Verificar si hay suficiente saldo para el retiro
+            if monto > saldo_actual:
+                messagebox.showerror("Error", "No tienes suficiente saldo para realizar el retiro.")
+            else:
+                self.monto_entry.delete(0, tk.END)
+                Ventana_despues_click_RETIRAR()
+
+    def volver(self):
+        self.destroy()
+
+
+class Ventana_despues_click_RETIRAR(tk.Toplevel):
+    def __init__(self):
+        super().__init__()
+        self.title("Retiro sencillo")
+        self.geometry("600x600")
+        self.configure(bg="blue")
+
+        mensaje = "Para retirar es muy sencillo.\nDirígete a un corresponsal bancario de Bancolombia y muestra este código QR.\nEl retiro se hará de acuerdo al monto que decidas."
+
+        mensaje_label = tk.Label(self, text=mensaje, font=("Arial", 12), bg="blue", fg="white")
+        mensaje_label.pack(pady=50)
+
+        # Agregar la imagen
+        imagen_path = "C:/Users/Daniel Lasso/PycharmProjects/proyectoPOO/Proyecto/qr_image.png"
+        self.imagen = self.resize_image(imagen_path, width=300, height=300)
+        imagen_label = tk.Label(self, image=self.imagen, bg="blue")
+        imagen_label.pack()
+
+        volver_button = tk.Button(self, text="Volver", command=self.volver, bg="blue", fg="white", font=("Arial", 12))
+        volver_button.pack(side=tk.LEFT, padx=10, pady=10)
+
+    def volver(self):
+        self.destroy()
+
+    def resize_image(self, path, width, height):
+        original_image = Image.open(path)
+        resized_image = original_image.resize((width, height), Image.ANTIALIAS)
+        return ImageTk.PhotoImage(resized_image)
+
 
 class ActualizarDatosWindow(tk.Toplevel):
     def __init__(self, master):
@@ -251,7 +324,7 @@ class ActualizarDatosWindow(tk.Toplevel):
         return False
 
     def actualizar_usuario(self):
-        nombre  = self.name_entry.get()
+        nombre = self.name_entry.get()
         apellido = self.apellido_entry.get()
         email = self.email_entry.get()
         contraseña = self.contraseña_entry.get()
@@ -272,5 +345,5 @@ class ActualizarDatosWindow(tk.Toplevel):
 
 
 if __name__ == "__main__":
-    login_window = LoginWindow()
+    login_window = PrincipalWindow()
     login_window.mainloop()
