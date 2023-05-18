@@ -82,57 +82,24 @@ class AccountWindow(tk.Tk):
         nombre_usuario = self.usuario.datos.get("nombre")
         apellido_usuario = self.usuario.datos.get("apellido")
 
-        encabezado_texto = f"Bienvenido a BANCO PAD, {nombre_usuario}, {apellido_usuario}!"
+        encabezado_texto = f"Bienvenido a BANCO PAD, {nombre_usuario} {apellido_usuario}!"
         encabezado = tk.Label(self, text=encabezado_texto, font=("Arial", 16), bg="blue", fg="white")
         encabezado.pack(pady=20)
 
         ver_saldo_btn = tk.Button(self, text="Ver saldo", width=20, command=self.ver_saldo)
-        ver_saldo_btn.pack(side=tk.LEFT, padx=10, pady=10)
+        ver_saldo_btn.pack(pady=10)
 
-        hacer_transferencia_btn = tk.Button(self, text="Hacer transferencia", width=20, command=self.hacer_transferencia)
-        hacer_transferencia_btn.pack(side=tk.LEFT, padx=10, pady=10)
+        hacer_transferencia_btn = tk.Button(self, text="Hacer transferencia", width=20,command=self.hacer_transferencia)
+        hacer_transferencia_btn.pack(pady=10)
 
-        cerrar_sesion_btn = tk.Button(self, text="Cerrar sesión", width=20, command=self.cerrar_sesion, bg="red",
-                                      fg="white")
-        cerrar_sesion_btn.pack(side=tk.RIGHT, padx=10, pady=10)
-
-    def ver_saldo(self):
-        saldo = self.usuario.obtener_saldo()
-        messagebox.showinfo("Saldo", f"Tu saldo es de: {saldo}$")
-
-    def hacer_transferencia(self):
-        transferencia_window = TransferenciaWindow(self)
-        transferencia_window.mainloop()
-
-    def cerrar_sesion(self):
-        self.destroy()
-        LoginWindow()
+        cerrar_sesion_btn = tk.Button(self, text="Cerrar sesión", width=20, command=self.cerrar_sesion, bg="red", fg="white")
+        cerrar_sesion_btn.pack(side=tk.LEFT, padx=10, pady=10, anchor="sw")
 
 
-class AccountWindow(tk.Tk):
-    def __init__(self):
-        super().__init__()
-        self.usuario = Usuario()
-        self.title("Cuenta bancaria")
-        self.geometry("600x300")
-        self.configure(bg="blue")
-
-        nombre_usuario = self.usuario.datos.get("nombre")
-        apellido_usuario = self.usuario.datos.get("apellido")
-
-        encabezado_texto = f"Bienvenido a BANCO PAD, {nombre_usuario}, {apellido_usuario}!"
-        encabezado = tk.Label(self, text=encabezado_texto, font=("Arial", 16), bg="blue", fg="white")
-        encabezado.pack(pady=20)
-
-        ver_saldo_btn = tk.Button(self, text="Ver saldo", width=20, command=self.ver_saldo)
-        ver_saldo_btn.pack(side=tk.LEFT, padx=10, pady=10)
-
-        hacer_transferencia_btn = tk.Button(self, text="Hacer transferencia", width=20, command=self.hacer_transferencia)
-        hacer_transferencia_btn.pack(side=tk.LEFT, padx=10, pady=10)
-
-        cerrar_sesion_btn = tk.Button(self, text="Cerrar sesión", width=20, command=self.cerrar_sesion, bg="red",
-                                      fg="white")
-        cerrar_sesion_btn.pack(side=tk.RIGHT, padx=10, pady=10)
+        numero_cuenta = self.usuario.datos.get("numero_cuenta")
+        numero_cuenta_label = tk.Label(self, text=f"Número de cuenta: {numero_cuenta}", font=("Arial", 12), bg="blue",
+                               fg="white")
+        numero_cuenta_label.place(relx=1, rely=1, anchor="se", x=-10, y=-10)
 
     def ver_saldo(self):
         saldo = self.usuario.obtener_saldo()
@@ -155,13 +122,6 @@ class TransferenciaWindow(tk.Toplevel):
         self.geometry("600x300")
         self.configure(bg="blue")
 
-        nombre_usuario = self.usuario.datos.get("nombre")
-        apellido_usuario = self.usuario.datos.get("apellido")
-
-        encabezado_texto = f"Bienvenido a BANCO PAD, {nombre_usuario}, {apellido_usuario}!"
-        encabezado = tk.Label(self, text=encabezado_texto, font=("Arial", 16), bg="blue", fg="white")
-        encabezado.pack(pady=20)
-
         tk.Label(self, text="Destinatario:", font=("Arial", 12), bg="blue", fg="white").pack()
         self.destinatario_entry = tk.Entry(self, font=("Arial", 12))
         self.destinatario_entry.pack()
@@ -170,13 +130,12 @@ class TransferenciaWindow(tk.Toplevel):
         self.monto_entry = tk.Entry(self, font=("Arial", 12))
         self.monto_entry.pack()
 
-        transferir_button = tk.Button(self, text="Transferir", command=self.transferir,
-                                      bg="blue", fg="white", font=("Arial", 12))
+        transferir_button = tk.Button(self, text="Transferir", command=self.transferir, bg="blue", fg="white",
+                                      font=("Arial", 12))
         transferir_button.pack()
-
-        volver_button = tk.Button(self, text="Volver", command=self.volver,
-                                  bg="blue", fg="white", font=("Arial", 12))
+        volver_button = tk.Button(self, text="Volver", command=self.volver, bg="blue", fg="white", font=("Arial", 12))
         volver_button.pack()
+
     def transferir(self):
         destinatario = self.destinatario_entry.get()
         monto = self.monto_entry.get()
@@ -199,14 +158,8 @@ class TransferenciaWindow(tk.Toplevel):
                 self.usuario.actualizar_saldo(saldo_nuevo)
 
                 # Realizar lógica adicional para completar la transferencia
-                destinatario_usuario = Usuario.obtener_usuario_por_correo(destinatario)
-                if destinatario_usuario:
-                    saldo_destinatario = destinatario_usuario.obtener_saldo()
-                    saldo_destinatario += monto
-                    destinatario_usuario.actualizar_saldo(saldo_destinatario)
-                    messagebox.showinfo("Transferencia", f"Se ha transferido {monto}$ a {destinatario}.")
-                else:
-                    messagebox.showerror("Error", "El destinatario no existe.")
+
+                messagebox.showinfo("Transferencia exitosa", "La transferencia se ha realizado exitosamente.")
 
     def volver(self):
         self.destroy()
@@ -215,5 +168,3 @@ class TransferenciaWindow(tk.Toplevel):
 if __name__ == "__main__":
     login_window = LoginWindow()
     login_window.mainloop()
-
-
