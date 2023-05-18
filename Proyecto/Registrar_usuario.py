@@ -82,7 +82,7 @@ class RegisterWindow(tk.Toplevel):
         return False
 
     def registrar_usuario(self):
-        nombre = self.name_entry.get()
+        nombre  = self.name_entry.get()
         apellido = self.apellido_entry.get()
         email = self.email_entry.get()
         contraseña = self.contraseña_entry.get()
