@@ -1,7 +1,6 @@
+import random
 import tkinter as tk
-
 from PIL import ImageTk, Image
-
 from Proyecto.informacion_usuario import Usuario
 
 
@@ -28,35 +27,34 @@ class RegisterWindow(tk.Toplevel):
             bg="blue",
             relief="solid"
         )
-        info_label.grid(row=0, column=0, padx=10, pady=10, sticky="e")  
-
+        info_label.grid(row=0, column=0, padx=10, pady=10, sticky="e")
 
         self.grid_columnconfigure(1, weight=1)
-
         self.grid_rowconfigure(0, weight=1)
+
         boton_estilo = {
-            "background": "blue",  
-            "foreground": "white",  
+            "background": "blue",
+            "foreground": "white",
             "font": ("Arial", 12),
             "width": 15
         }
 
         etiqueta_estilo = {
-            "background": "blue",  
-            "foreground": "white",  
-            "font": ("Times New Roman", 12, "bold"), 
-            "relief": "solid"  
+            "background": "blue",
+            "foreground": "white",
+            "font": ("Times New Roman", 12, "bold"),
+            "relief": "solid"
         }
 
-        tk.Label(self, text="Nombre:",**etiqueta_estilo).grid(row=0, column=1, padx=5, pady=5)
+        tk.Label(self, text="Nombre:", **etiqueta_estilo).grid(row=0, column=1, padx=5, pady=5)
         self.name_entry = tk.Entry(self)
         self.name_entry.grid(row=0, column=2, padx=5, pady=5)
 
-        tk.Label(self, text="Apellido:",**etiqueta_estilo).grid(row=1, column=1, padx=5, pady=5)
+        tk.Label(self, text="Apellido:", **etiqueta_estilo).grid(row=1, column=1, padx=5, pady=5)
         self.apellido_entry = tk.Entry(self)
         self.apellido_entry.grid(row=1, column=2, padx=5, pady=5)
 
-        tk.Label(self, text="Email:",**etiqueta_estilo).grid(row=2, column=1, padx=5, pady=5)
+        tk.Label(self, text="Email:", **etiqueta_estilo).grid(row=2, column=1, padx=5, pady=5)
         self.email_entry = tk.Entry(self)
         self.email_entry.grid(row=2, column=2, padx=5, pady=5)
 
@@ -64,18 +62,24 @@ class RegisterWindow(tk.Toplevel):
         self.contraseña_entry = tk.Entry(self)
         self.contraseña_entry.grid(row=3, column=2, padx=5, pady=5)
 
-        tk.Label(self, text="Confirmar contraseña :", **etiqueta_estilo).grid(row=4, column=1, padx=5, pady=5)
+        tk.Label(self, text="Confirmar contraseña:", **etiqueta_estilo).grid(row=4, column=1, padx=5, pady=5)
         self.verificar_contraseña_entry = tk.Entry(self)
         self.verificar_contraseña_entry.grid(row=4, column=2, padx=5, pady=5)
 
-        tk.Label(self, text="Saldo de cuenta", **etiqueta_estilo).grid(row=5, column=1, padx=5, pady=5)
+        tk.Label(self, text="Saldo de cuenta:", **etiqueta_estilo).grid(row=5, column=1, padx=5, pady=5)
         self.saldo_btn = tk.Entry(self)
         self.saldo_btn.grid(row=5, column=2, padx=5, pady=5)
 
-        guardar_info = tk.Button(self, text="Registrarme", command=self.registrar_usuario,  **boton_estilo)
+        guardar_info = tk.Button(self, text="Registrarme", command=self.registrar_usuario, **boton_estilo)
         guardar_info.grid(row=6, column=2, padx=5, pady=5)
         self.fondo_photo = fondo_photo
 
+    def validar_correo(self, correo):
+        dominios_permitidos = ["gmail", "outlook"]
+        for dominio in dominios_permitidos:
+            if dominio in correo:
+                return True
+        return False
 
     def registrar_usuario(self):
         nombre = self.name_entry.get()
@@ -85,8 +89,21 @@ class RegisterWindow(tk.Toplevel):
         verificar_contraseña = self.verificar_contraseña_entry.get()
         saldo = self.saldo_btn.get()
 
-        if not saldo.isdigit():
+        if not all([nombre, apellido, email, contraseña, verificar_contraseña, saldo]):
+            tk.messagebox.showerror("Error", "Todos los campos son obligatorios")
+        elif not saldo.isdigit():
             tk.messagebox.showerror("Error", "El saldo debe ser un valor entero")
+        elif not self.validar_correo(email):
+            tk.messagebox.showerror("Error", "Solo se permiten correos de Gmail y Outlook")
+        elif Usuario.correo_existe(email):
+            tk.messagebox.showerror("Error", "El correo electrónico ya está en uso")
+        elif contraseña != verificar_contraseña:
+            tk.messagebox.showerror("Error", "Las contraseñas no coinciden")
         else:
-            if self.usuario.guardar_datos(nombre, apellido, email, contraseña, verificar_contraseña, saldo):
+            numero_cuenta = random.randrange(1000000000, 9999999999)
+            saldo = int(saldo)
+            if self.usuario.guardar_datos(nombre, apellido, email, contraseña, verificar_contraseña, saldo,
+                                          numero_cuenta):
+                tk.messagebox.showinfo("Registro exitoso", "Se ha registrado con éxito")
                 self.destroy()
+
