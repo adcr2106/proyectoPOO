@@ -1,14 +1,12 @@
 import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
-from Proyecto.Registrar_usuario import RegisterWindow
-from Proyecto.informacion_usuario import Usuario
-from decouple import config
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-
+from Proyecto.Registrar_usuario import RegisterWindow
+from Proyecto.informacion_usuario import Usuario
 
 class PrincipalWindow(tk.Tk):
     def __init__(self):
@@ -46,7 +44,6 @@ class PrincipalWindow(tk.Tk):
         self.password_entry = tk.Entry(self, show=".")
         self.password_entry.grid(row=1, column=2, padx=5, pady=5)
 
-
         self.login_button = tk.Button(self, text="Iniciar sesión", command=self.login, **boton_estilo)
         self.login_button.grid(row=2, column=2, padx=5, pady=5)
 
@@ -55,7 +52,8 @@ class PrincipalWindow(tk.Tk):
         self.register_button.grid(row=3, column=2, padx=5, pady=5)
 
         # Agregar el botón de etiqueta "¿Olvidaste la contraseña?"
-        olvidaste_label = tk.Button(self, text="¿Olvidaste la contraseña?",command = self.olvide_contraseña, **boton_estilo)
+        olvidaste_label = tk.Button(self, text="¿Olvidaste la contraseña?", command=self.olvide_contraseña,
+                                    **boton_estilo)
         olvidaste_label.grid(row=4, column=2, padx=5, pady=5)
 
         info_label = tk.Label(
@@ -83,76 +81,6 @@ class PrincipalWindow(tk.Tk):
         OlvideContraseña()
 
 
-class OlvideContraseña(tk.Tk):
-    def __init__(self):
-        super().__init__()
-        self.usuario = Usuario()
-        self.title("Olvide mi contraseña ")
-        self.geometry("600x400")
-        self.configure(bg="blue")
-        boton_estilo = {
-            "background": "blue",
-            "foreground": "white",
-            "font": ("Arial", 12),
-            "width": 20
-        }
-
-        etiqueta_estilo = {
-            "background": "blue",
-            "foreground": "white",
-            "font": ("Times New Roman", 12, "bold"),
-            "relief": "solid"
-        }
-        tk.Label(self, text="Ingrese correo de recuperacion:", font=("Arial", 12), bg="blue", fg="white").pack()
-        self.destinatario_entry = tk.Entry(self, font=("Arial", 12))
-        self.destinatario_entry.pack()
-        user_email = self.destinatario_entry.get()
-
-        enviar_btn = tk.Button(self, text="Enviar", width=20, command=self.enviar_correo)
-        enviar_btn.pack(pady=10, anchor="center")
-
-
-    def enviar_correo(self, asunto= "CONTRASEÑA", mensaje = "1111", contraseña="Daniel2022_", remitente="bancoPAD@outlook.com" ):
-        destinatario = self.destinatario_entry.get()
-        # Obtener el dominio del remitente y del destinatario
-        print(destinatario)
-        dominio_remitente = remitente.split('@')[1].lower()
-        dominio_destinatario = destinatario.split('@')[1].lower()
-
-        # Configurar los detalles del servidor de correo saliente según el dominio del remitente
-        if dominio_remitente == 'gmail.com':
-            servidor_smtp = 'smtp.gmail.com'
-            puerto_smtp = 587
-        elif dominio_remitente == 'outlook.com' or dominio_remitente == 'hotmail.com':
-            servidor_smtp = 'smtp-mail.outlook.com'
-            puerto_smtp = 587
-        else:
-            raise ValueError('No se admite el dominio de correo electrónico del remitente.')
-
-        # Crear conexión segura con el servidor SMTP
-        servidor = smtplib.SMTP(servidor_smtp, puerto_smtp)
-        servidor.starttls()
-        servidor.login(remitente, contraseña)
-
-        # Crear el mensaje del correo electrónico
-        mensaje_correo = MIMEMultipart()
-        mensaje_correo['From'] = remitente
-        mensaje_correo['To'] = destinatario
-        mensaje_correo['Subject'] = asunto
-        mensaje_correo.attach(MIMEText(mensaje, 'plain', 'utf-8'))
-
-        # Enviar el correo electrónico
-        servidor.send_message(mensaje_correo)
-        tk.messagebox.showinfo("Mensaje de recuperacion", "Mensaje enviado con exito, revisa tu bandeja de entrada y ahí tendras tu contraseña :)")
-
-        # Cerrar la conexión con el servidor SMTP
-        servidor.quit()
-
-
-
-
-
-
 class AccountWindow(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -178,18 +106,17 @@ class AccountWindow(tk.Tk):
         hacer_retiro_btn = tk.Button(self, text="Hacer retiro", width=20, command=self.hacer_retiro)
         hacer_retiro_btn.pack(pady=10, anchor="center")
 
-
         actualizar_datos_btn = tk.Button(self, text="Actualizar Datos", width=20, command=self.actualizar_datos)
         actualizar_datos_btn.pack(pady=10, anchor="center")
 
-        cerrar_sesion_btn = tk.Button(self, text="Cerrar sesión", width=20, command=self.cerrar_sesion, bg="red", fg="white")
+        cerrar_sesion_btn = tk.Button(self, text="Cerrar sesión", width=20, command=self.cerrar_sesion, bg="red",
+                                      fg="white")
         cerrar_sesion_btn.pack(side=tk.LEFT, padx=10, pady=10, anchor="sw")
 
         numero_cuenta = self.usuario.datos.get("numero_cuenta")
-        numero_cuenta_label = tk.Label(self, text=f"# de cuenta: {numero_cuenta}", font=("Arial", 12), bg="blue", fg="white")
+        numero_cuenta_label = tk.Label(self, text=f"# de cuenta: {numero_cuenta}", font=("Arial", 12), bg="blue",
+                                       fg="white")
         numero_cuenta_label.place(relx=1, rely=1, anchor="se", x=-10, y=-10)
-
-
 
     def ver_saldo(self):
         saldo = self.usuario.obtener_saldo()
@@ -210,8 +137,6 @@ class AccountWindow(tk.Tk):
     def cerrar_sesion(self):
         self.destroy()
         PrincipalWindow()
-
-
 class TransferenciaWindow(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
@@ -257,79 +182,6 @@ class TransferenciaWindow(tk.Toplevel):
 
     def volver(self):
         self.destroy()
-
-
-class VentanaRetiro(tk.Toplevel):
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.usuario = parent.usuario
-        self.title("Retirar dinero")
-        self.geometry("600x300")
-        self.configure(bg="blue")
-
-        tk.Label(self, text="Monto a retirar:", font=("Arial", 12), bg="blue", fg="white").pack()
-        self.monto_entry = tk.Entry(self, font=("Arial", 12))
-        self.monto_entry.pack()
-
-        retirar_button = tk.Button(self, text="Retirar", command=self.retirar, bg="blue", fg="white",
-                                   font=("Arial", 12))
-        retirar_button.pack()
-        volver_button = tk.Button(self, text="Volver", command=self.volver, bg="blue", fg="white",
-                                  font=("Arial", 12))
-        volver_button.pack()
-
-    def retirar(self):
-        monto = self.monto_entry.get()
-
-        # Verificar si el monto es válido
-        if not monto:
-            messagebox.showerror("Error", "Debe ingresar el monto a retirar.")
-        elif not monto.isdigit():
-            messagebox.showerror("Error", "El monto debe ser un valor numérico.")
-        else:
-            monto = int(monto)
-            saldo_actual = self.usuario.obtener_saldo()
-
-            # Verificar si hay suficiente saldo para el retiro
-            if monto > saldo_actual:
-                messagebox.showerror("Error", "No tienes suficiente saldo para realizar el retiro.")
-            else:
-                self.monto_entry.delete(0, tk.END)
-                Ventana_despues_click_RETIRAR()
-
-    def volver(self):
-        self.destroy()
-
-
-class Ventana_despues_click_RETIRAR(tk.Toplevel):
-    def __init__(self):
-        super().__init__()
-        self.title("Retiro sencillo")
-        self.geometry("600x600")
-        self.configure(bg="blue")
-
-        mensaje = "Para retirar es muy sencillo.\nDirígete a un corresponsal bancario de Bancolombia y muestra este código QR.\nEl retiro se hará de acuerdo al monto que decidas."
-
-        mensaje_label = tk.Label(self, text=mensaje, font=("Arial", 12), bg="blue", fg="white")
-        mensaje_label.pack(pady=50)
-
-        # Agregar la imagen
-        imagen_path = "C:/Users/Daniel Lasso/PycharmProjects/proyectoPOO/Proyecto/qr_image.png"
-        self.imagen = self.resize_image(imagen_path, width=300, height=300)
-        imagen_label = tk.Label(self, image=self.imagen, bg="blue")
-        imagen_label.pack()
-
-        volver_button = tk.Button(self, text="Volver", command=self.volver, bg="blue", fg="white", font=("Arial", 12))
-        volver_button.pack(side=tk.LEFT, padx=10, pady=10)
-
-    def volver(self):
-        self.destroy()
-
-    def resize_image(self, path, width, height):
-        original_image = Image.open(path)
-        resized_image = original_image.resize((width, height), Image.ANTIALIAS)
-        return ImageTk.PhotoImage(resized_image)
-
 
 class ActualizarDatosWindow(tk.Toplevel):
     def __init__(self, master):
@@ -385,8 +237,6 @@ class ActualizarDatosWindow(tk.Toplevel):
         self.email_entry = tk.Entry(self)
         self.email_entry.grid(row=2, column=2, padx=5, pady=5)
 
-
-
         tk.Label(self, text="Contraseña:", **etiqueta_estilo).grid(row=3, column=1, padx=5, pady=5)
         self.contraseña_entry = tk.Entry(self)
         self.contraseña_entry.grid(row=3, column=2, padx=5, pady=5)
@@ -426,6 +276,126 @@ class ActualizarDatosWindow(tk.Toplevel):
                 tk.messagebox.showinfo("Actualización Exitosa", "Se ha actualizado los datos con éxito")
                 self.destroy()
 
+
+class VentanaRetiro(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.usuario = parent.usuario
+        self.title("Retirar dinero")
+        self.geometry("600x300")
+        self.configure(bg="blue")
+
+        tk.Label(self, text="Monto a retirar:", font=("Arial", 12), bg="blue", fg="white").pack()
+        self.monto_entry = tk.Entry(self, font=("Arial", 12))
+        self.monto_entry.pack()
+
+        retirar_button = tk.Button(self, text="Retirar", command=self.retirar, bg="blue", fg="white",
+                                   font=("Arial", 12))
+        retirar_button.pack()
+        volver_button = tk.Button(self, text="Volver", command=self.volver, bg="blue", fg="white",
+                                  font=("Arial", 12))
+        volver_button.pack()
+
+    def retirar(self):
+        monto = self.monto_entry.get()
+
+        # Verificar si el monto es válido
+        if not monto:
+            messagebox.showerror("Error", "Debe ingresar el monto a retirar.")
+        elif not monto.isdigit():
+            messagebox.showerror("Error", "El monto debe ser un valor numérico.")
+        else:
+            monto = int(monto)
+            saldo_actual = self.usuario.obtener_saldo()
+
+            # Verificar si hay suficiente saldo para el retiro
+            if monto > saldo_actual:
+                messagebox.showerror("Error", "No tienes suficiente saldo para realizar el retiro.")
+            else:
+                self.monto_entry.delete(0, tk.END)
+                Ventana_despues_click_RETIRAR()
+
+    def volver(self):
+        self.destroy()
+
+class Ventana_despues_click_RETIRAR(tk.Toplevel):
+    def __init__(self):
+        super().__init__()
+        self.title("Retiro sencillo")
+        self.geometry("600x600")
+        self.configure(bg="blue")
+
+        mensaje = "Para retirar es muy sencillo.\nDirígete a un corresponsal bancario de Bancolombia y muestra este código QR.\nEl retiro se hará de acuerdo al monto que decidas."
+
+        mensaje_label = tk.Label(self, text=mensaje, font=("Arial", 12), bg="blue", fg="white")
+        mensaje_label.pack(pady=50)
+
+        # Agregar la imagen
+        imagen_path = "C:/Users/Daniel Lasso/PycharmProjects/proyectoPOO/Proyecto/qr_image.png"
+        self.imagen = self.resize_image(imagen_path, width=300, height=300)
+        imagen_label = tk.Label(self, image=self.imagen, bg="blue")
+        imagen_label.pack()
+
+        volver_button = tk.Button(self, text="Volver", command=self.volver, bg="blue", fg="white", font=("Arial", 12))
+        volver_button.pack(side=tk.LEFT, padx=10, pady=10)
+
+    def volver(self):
+        self.destroy()
+
+    def resize_image(self, path, width, height):
+        original_image = Image.open(path)
+        resized_image = original_image.resize((width, height), Image.ANTIALIAS)
+        return ImageTk.PhotoImage(resized_image)
+
+class OlvideContraseña(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.usuario = Usuario()
+        self.title("Olvide mi contraseña ")
+        self.geometry("600x400")
+        self.configure(bg="blue")
+
+        tk.Label(self, text="Ingrese correo de recuperacion:", font=("Arial", 12), bg="blue", fg="white").pack()
+        self.destinatario_entry = tk.Entry(self, font=("Arial", 12))
+        self.destinatario_entry.pack()
+
+        enviar_btn = tk.Button(self, text="Enviar", width=20, command=self.enviar_correo)
+        enviar_btn.pack(pady=10, anchor="center")
+
+    def enviar_correo(self):
+        asunto = f"Contraseña de Banco PAD"
+        mensaje = f"Este correo ha sido solicitado desde la app banco PAD, si no fuiste tu, te recomendamos cambiar la contraseña o de correo, si no esta es tu contraseña, ¡no la olvides! {self.usuario.obetener_contraseña()}"
+        contraseña = "Daniel2022_"
+        remitente = "bancoPAD@outlook.com"
+        destinatario = self.destinatario_entry.get()
+        dominio_remitente = remitente.split('@')[1].lower()
+        dominio_destinatario = destinatario.split('@')[1].lower()
+
+        if dominio_remitente == 'gmail.com':
+            servidor_smtp = 'smtp.gmail.com'
+            puerto_smtp = 587
+        elif dominio_remitente == 'outlook.com' or dominio_remitente == 'hotmail.com':
+            servidor_smtp = 'smtp-mail.outlook.com'
+            puerto_smtp = 587
+        else:
+            raise ValueError('No se admite el dominio de correo electrónico del remitente.')
+
+        servidor = smtplib.SMTP(servidor_smtp, puerto_smtp)
+        servidor.starttls()
+        servidor.login(remitente, contraseña)
+
+        mensaje_correo = MIMEMultipart()
+        mensaje_correo['From'] = remitente
+        mensaje_correo['To'] = destinatario
+        mensaje_correo['Subject'] = asunto
+        mensaje_correo.attach(MIMEText(mensaje, 'plain', 'utf-8'))
+
+        servidor.send_message(mensaje_correo)
+        tk.messagebox.showinfo("Mensaje de recuperacion",
+                               "Mensaje enviado con exito, revisa tu bandeja de entrada y ahí tendras tu contraseña : )")
+
+        # Cerrar la conexión con el servidor SMTP
+        servidor.quit()
 
 if __name__ == "__main__":
     login_window = PrincipalWindow()
