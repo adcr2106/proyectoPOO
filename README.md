@@ -8,5 +8,6 @@ Los retiros se harán por medio de un corresponsal bancario de Bancolombia, el u
 La aplicación también mantendrá un registro detallado de las transacciones
 realizadas por cada usuario.
 La aplicación incluirá una sección que permitirá a los usuarios ver su saldo actual, ver su historial de transacciones y cambiar su información personal. 
-La plataforma estará protegida por un captcha a la hora de iniciar sesión para garantizar la seguridad de la información financiera de los usuarios.
+La plataforma estará protegida a la hora de iniciar sesión para garantizar la seguridad de la información financiera de los usuarios.
 En resumen, nuestra idea de crear esta aplicación permitirá a los usuarios acceder a una plataforma bancaria digital que sea fácil de usar y segura. La aplicación ayudará a los usuarios a controlar sus gastos y administrar sus finanzas de manera más efectiva, lo que les permitirá mejorar su calidad de vida y alcanzar sus metas financieras a largo y a mediano plazo.
+
