@@ -11,6 +11,7 @@ class RegisterWindow(tk.Toplevel):
         self.title("Registro")
         self.geometry("600x300")
 
+
         fondo_image = Image.open("R.jpeg")
         fondo_photo = ImageTk.PhotoImage(fondo_image)
 
@@ -61,6 +62,7 @@ class RegisterWindow(tk.Toplevel):
         tk.Label(self, text="Contraseña:", **etiqueta_estilo).grid(row=3, column=1, padx=5, pady=5)
         self.contraseña_entry = tk.Entry(self)
         self.contraseña_entry.grid(row=3, column=2, padx=5, pady=5)
+
 
         tk.Label(self, text="Confirmar contraseña:", **etiqueta_estilo).grid(row=4, column=1, padx=5, pady=5)
         self.verificar_contraseña_entry = tk.Entry(self)
