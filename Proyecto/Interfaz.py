@@ -302,11 +302,13 @@ class VentanaRetiro(tk.Toplevel):
             if monto > saldo_actual:
                 messagebox.showerror("Error", "No tienes suficiente saldo para realizar el retiro.")
             else:
+                self.acctualizar_saldo(monto)
                 self.monto_entry.delete(0, tk.END)
                 Ventana_despues_click_RETIRAR()
                 messagebox.showinfo("Retiro exitoso",
                                     f"Se retiró {monto} $")
-
+    def acctualizar_saldo(self, monto):
+        self.usuario.obtener_saldo(monto)
     def volver(self):
         self.destroy()
 
