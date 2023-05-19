@@ -1,23 +1,25 @@
 import re
 import tkinter as tk
+from tkinter import messagebox
+usuarios_global = []
 
 
 class Usuario:
     UserSaldo = 0
     UserNumber = 0
-    datos = {} #Esto será variable de clase para que todos los metodos puedan acceder a la info
+    datos = {}
 
     def guardar_datos(self, nombre, apellido, email, contraseña, contraseña_verificacion, saldo, numero_cuenta):
         if not re.match("^[a-zA-Z]+$", nombre):
-            tk.messagebox.showerror("Error", "El nombre solo debe contener letras")
+            messagebox.showerror("Error", "El nombre solo debe contener letras")
         elif not re.match("^[a-zA-Z]+$", apellido):
-            tk.messagebox.showerror("Error", "El apellido solo debe contener letras")
+            messagebox.showerror("Error", "El apellido solo debe contener letras")
         elif len(contraseña) < 6:
-            tk.messagebox.showerror("Error", "La contraseña debe tener al menos 6 caracteres")
+            messagebox.showerror("Error", "La contraseña debe tener al menos 6 caracteres")
         elif contraseña != contraseña_verificacion:
-            tk.messagebox.showerror("Error", "Las contraseñas no coinciden")
+            messagebox.showerror("Error", "Las contraseñas no coinciden")
         elif 'email' in self.__class__.datos and self.__class__.datos['email'] == email:
-            tk.messagebox.showerror("Error", "El correo electrónico ya está registrado")
+            messagebox.showerror("Error", "El correo electrónico ya está registrado")
         else:
             self.__class__.datos['nombre'] = nombre
             self.__class__.datos['apellido'] = apellido
@@ -27,18 +29,23 @@ class Usuario:
             self.__class__.datos["numero_cuenta"] = numero_cuenta
             self.UserSaldo = saldo
             self.UserNumber = numero_cuenta
+
+            # Almacenar el usuario en la variable global
+            global usuario_global
+            usuario_global = self
+            print(usuario_global.datos)
             return True
     def actualizar_datos(self, nombre, apellido, email, contraseña, contraseña_verificacion):
         if not re.match("^[a-zA-Z]+$", nombre):
-            tk.messagebox.showerror("Error", "El nombre solo debe contener letras")
+            messagebox.showerror("Error", "El nombre solo debe contener letras")
         elif not re.match("^[a-zA-Z]+$", apellido):
-            tk.messagebox.showerror("Error", "El apellido solo debe contener letras")
+            messagebox.showerror("Error", "El apellido solo debe contener letras")
         elif len(contraseña) < 6:
-            tk.messagebox.showerror("Error", "La contraseña debe tener al menos 6 caracteres")
+            messagebox.showerror("Error", "La contraseña debe tener al menos 6 caracteres")
         elif contraseña != contraseña_verificacion:
-            tk.messagebox.showerror("Error", "Las contraseñas no coinciden")
+            messagebox.showerror("Error", "Las contraseñas no coinciden")
         elif 'email' in self.__class__.datos and self.__class__.datos['email'] == email:
-            tk.messagebox.showerror("Error", "El correo electrónico ya está registrado")
+            messagebox.showerror("Error", "El correo electrónico ya está registrado")
         else:
             self.__class__.datos['nombre'] = nombre
             self.__class__.datos['apellido'] = apellido
@@ -54,19 +61,19 @@ class Usuario:
 
     def validar_datos(self, email, contraseña):
         if not self.__class__.datos:
-            tk.messagebox.showerror("Acceso denegado", "El correo electrónico o la contraseña son incorrectos")
+            messagebox.showerror("Acceso denegado", "El correo electrónico o la contraseña son incorrectos")
         else:
             stored_email = self.__class__.datos.get('email')
             stored_password = self.__class__.datos.get('contraseña')
 
             if stored_email is None or stored_password is None:
-                tk.messagebox.showerror("Acceso denegado", "Ingresa la información, no dejes espacios en blanco")
+                messagebox.showerror("Acceso denegado", "Ingresa la información, no dejes espacios en blanco")
                 return False
             elif email == stored_email and contraseña == stored_password:
-                tk.messagebox.showinfo("Acceso concedido", "¡Inicio de sesión exitoso!")
+                messagebox.showinfo("Acceso concedido", "¡Inicio de sesión exitoso!")
                 return True
             else:
-                tk.messagebox.showerror("Acceso denegado", "El correo electrónico o la contraseña son incorrectos")
+                messagebox.showerror("Acceso denegado", "El correo electrónico o la contraseña son incorrectos")
                 return False
 
     def obtener_saldo(self):
@@ -75,10 +82,34 @@ class Usuario:
 
     def actualizar_saldo(self, nuevo_saldo):
         self.__class__.datos["saldo"] = nuevo_saldo
+    def realizar_transferencia(self, destinatario, monto):
+        saldo_actual = self.obtener_saldo()
+        if saldo_actual >= monto:
+            if isinstance(destinatario, Usuario):
+                saldo_destinatario = destinatario.obtener_saldo()
+                nuevo_saldo_origen = saldo_actual - monto
+                nuevo_saldo_destino = saldo_destinatario + monto
 
-    @staticmethod #No requiere tener una instancia de la clase para funcionar correctamente.
-    def obtener_usuario_por_correo(correo):
-            if correo in Usuario.datos:
-                return Usuario()
+                self.actualizar_saldo(nuevo_saldo_origen)
+                destinatario.actualizar_saldo(nuevo_saldo_destino)
+
+                messagebox.showinfo("Transferencia exitosa",
+                                    f"Se transfirió {monto} a {destinatario.__class__.datos['nombre']}")
+                return True
             else:
-                return None
+                messagebox.showerror("Error", "El destinatario no es válido")
+                return False
+        else:
+            messagebox.showerror("Error", "Saldo insuficiente para realizar la transferencia")
+            return False
+
+    @staticmethod
+    def obtener_usuario_por_correo(correo):
+        if correo in Usuario.datos:
+            return Usuario()
+        else:
+            return None
+
+usuario = Usuario()
+usuario.guardar_datos("John", "Doe", "johndoe@gmail.com", "123456", "123456", 1000, 1234567890)
+
