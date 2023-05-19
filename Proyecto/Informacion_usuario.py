@@ -72,8 +72,8 @@ class Usuario:
                 messagebox.showerror("Acceso denegado", "El correo electrónico o la contraseña son incorrectos")
                 return False
 
-    def obtener_saldo(self):
-        saldo = self.__class__.datos.get("saldo")
+    def obtener_saldo(self, monto = 0):
+        saldo = (self.__class__.datos.get("saldo") - monto)
         return saldo
 
     def obetener_contraseña(self):
