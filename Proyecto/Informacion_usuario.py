@@ -80,6 +80,9 @@ class Usuario:
         saldo = self.__class__.datos.get("saldo")
         return saldo
 
+    def obetener_contraseña(self):
+        contraseña = self.__class__.datos.get("contraseña")
+        return contraseña
     def actualizar_saldo(self, nuevo_saldo):
         self.__class__.datos["saldo"] = nuevo_saldo
     def realizar_transferencia(self, destinatario, monto):
