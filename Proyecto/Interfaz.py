@@ -1,9 +1,13 @@
 import tkinter as tk
 from tkinter import messagebox
 from PIL import Image, ImageTk
-
 from Proyecto.Registrar_usuario import RegisterWindow
 from Proyecto.informacion_usuario import Usuario
+from decouple import config
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 
 
 class PrincipalWindow(tk.Tk):
@@ -39,8 +43,9 @@ class PrincipalWindow(tk.Tk):
         self.email_entry.grid(row=0, column=2, padx=5, pady=5)
 
         tk.Label(self, text="Contraseña:", **etiqueta_estilo).grid(row=1, column=1, padx=5, pady=5)
-        self.password_entry = tk.Entry(self, show="*")
+        self.password_entry = tk.Entry(self, show=".")
         self.password_entry.grid(row=1, column=2, padx=5, pady=5)
+
 
         self.login_button = tk.Button(self, text="Iniciar sesión", command=self.login, **boton_estilo)
         self.login_button.grid(row=2, column=2, padx=5, pady=5)
@@ -48,6 +53,10 @@ class PrincipalWindow(tk.Tk):
         self.register_button = tk.Button(self, text="Registrarte aquí", command=self.open_register_window,
                                          **boton_estilo)
         self.register_button.grid(row=3, column=2, padx=5, pady=5)
+
+        # Agregar el botón de etiqueta "¿Olvidaste la contraseña?"
+        olvidaste_label = tk.Button(self, text="¿Olvidaste la contraseña?",command = self.olvide_contraseña, **boton_estilo)
+        olvidaste_label.grid(row=4, column=2, padx=5, pady=5)
 
         info_label = tk.Label(
             self,
@@ -70,13 +79,86 @@ class PrincipalWindow(tk.Tk):
             self.destroy()
             AccountWindow()
 
+    def olvide_contraseña(self):
+        OlvideContraseña()
+
+
+class OlvideContraseña(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.usuario = Usuario()
+        self.title("Olvide mi contraseña ")
+        self.geometry("600x400")
+        self.configure(bg="blue")
+        boton_estilo = {
+            "background": "blue",
+            "foreground": "white",
+            "font": ("Arial", 12),
+            "width": 20
+        }
+
+        etiqueta_estilo = {
+            "background": "blue",
+            "foreground": "white",
+            "font": ("Times New Roman", 12, "bold"),
+            "relief": "solid"
+        }
+        tk.Label(self, text="Ingrese correo de recuperacion:", font=("Arial", 12), bg="blue", fg="white").pack()
+        self.destinatario_entry = tk.Entry(self, font=("Arial", 12))
+        self.destinatario_entry.pack()
+        user_email = self.destinatario_entry.get()
+
+        enviar_btn = tk.Button(self, text="Enviar", width=20, command=self.enviar_correo)
+        enviar_btn.pack(pady=10, anchor="center")
+
+
+    def enviar_correo(self, asunto= "CONTRASEÑA", mensaje = "1111", contraseña="Daniel2022_", remitente="bancoPAD@outlook.com" ):
+        destinatario = self.destinatario_entry.get()
+        # Obtener el dominio del remitente y del destinatario
+        print(destinatario)
+        dominio_remitente = remitente.split('@')[1].lower()
+        dominio_destinatario = destinatario.split('@')[1].lower()
+
+        # Configurar los detalles del servidor de correo saliente según el dominio del remitente
+        if dominio_remitente == 'gmail.com':
+            servidor_smtp = 'smtp.gmail.com'
+            puerto_smtp = 587
+        elif dominio_remitente == 'outlook.com' or dominio_remitente == 'hotmail.com':
+            servidor_smtp = 'smtp-mail.outlook.com'
+            puerto_smtp = 587
+        else:
+            raise ValueError('No se admite el dominio de correo electrónico del remitente.')
+
+        # Crear conexión segura con el servidor SMTP
+        servidor = smtplib.SMTP(servidor_smtp, puerto_smtp)
+        servidor.starttls()
+        servidor.login(remitente, contraseña)
+
+        # Crear el mensaje del correo electrónico
+        mensaje_correo = MIMEMultipart()
+        mensaje_correo['From'] = remitente
+        mensaje_correo['To'] = destinatario
+        mensaje_correo['Subject'] = asunto
+        mensaje_correo.attach(MIMEText(mensaje, 'plain', 'utf-8'))
+
+        # Enviar el correo electrónico
+        servidor.send_message(mensaje_correo)
+        tk.messagebox.showinfo("Mensaje de recuperacion", "Mensaje enviado con exito, revisa tu bandeja de entrada y ahí tendras tu contraseña :)")
+
+        # Cerrar la conexión con el servidor SMTP
+        servidor.quit()
+
+
+
+
+
 
 class AccountWindow(tk.Tk):
     def __init__(self):
         super().__init__()
         self.usuario = Usuario()
-        self.title("Cuenta bancaria")
-        self.geometry("600x300")
+        self.title("Ventana de usuario ")
+        self.geometry("600x400")
         self.configure(bg="blue")
 
         nombre_usuario = self.usuario.datos.get("nombre")
@@ -96,17 +178,18 @@ class AccountWindow(tk.Tk):
         hacer_retiro_btn = tk.Button(self, text="Hacer retiro", width=20, command=self.hacer_retiro)
         hacer_retiro_btn.pack(pady=10, anchor="center")
 
-        cerrar_sesion_btn = tk.Button(self, text="Cerrar sesión", width=20, command=self.cerrar_sesion, bg="red",
-                                      fg="white")
-        cerrar_sesion_btn.pack(side=tk.LEFT, padx=10, pady=10, anchor="sw")
-
-        numero_cuenta = self.usuario.datos.get("numero_cuenta")
-        numero_cuenta_label = tk.Label(self, text=f"# de cuenta: {numero_cuenta}", font=("Arial", 12), bg="blue",
-                                       fg="white")
-        numero_cuenta_label.place(relx=1, rely=1, anchor="se", x=-10, y=-10)
 
         actualizar_datos_btn = tk.Button(self, text="Actualizar Datos", width=20, command=self.actualizar_datos)
         actualizar_datos_btn.pack(pady=10, anchor="center")
+
+        cerrar_sesion_btn = tk.Button(self, text="Cerrar sesión", width=20, command=self.cerrar_sesion, bg="red", fg="white")
+        cerrar_sesion_btn.pack(side=tk.LEFT, padx=10, pady=10, anchor="sw")
+
+        numero_cuenta = self.usuario.datos.get("numero_cuenta")
+        numero_cuenta_label = tk.Label(self, text=f"# de cuenta: {numero_cuenta}", font=("Arial", 12), bg="blue", fg="white")
+        numero_cuenta_label.place(relx=1, rely=1, anchor="se", x=-10, y=-10)
+
+
 
     def ver_saldo(self):
         saldo = self.usuario.obtener_saldo()
@@ -132,7 +215,7 @@ class AccountWindow(tk.Tk):
 class TransferenciaWindow(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
-        self.usuario = parent.usuario
+        self.usuario = Usuario()
         self.title("Realizar transferencia")
         self.geometry("600x300")
         self.configure(bg="blue")
@@ -169,8 +252,6 @@ class TransferenciaWindow(tk.Toplevel):
                 messagebox.showerror("Error", "No tienes suficiente saldo para realizar la transferencia.")
             else:
                 self.usuario.realizar_transferencia(destinatario, monto)
-                messagebox.showinfo("Transferencia exitosa",
-                                    f"Se ha transferido {monto}$ al destinatario {destinatario}.")
                 self.destinatario_entry.delete(0, tk.END)
                 self.monto_entry.delete(0, tk.END)
 
@@ -303,6 +384,8 @@ class ActualizarDatosWindow(tk.Toplevel):
         tk.Label(self, text="Email:", **etiqueta_estilo).grid(row=2, column=1, padx=5, pady=5)
         self.email_entry = tk.Entry(self)
         self.email_entry.grid(row=2, column=2, padx=5, pady=5)
+
+
 
         tk.Label(self, text="Contraseña:", **etiqueta_estilo).grid(row=3, column=1, padx=5, pady=5)
         self.contraseña_entry = tk.Entry(self)
