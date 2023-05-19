@@ -5,6 +5,8 @@ usuarios_global = []
 
 
 class Usuario:
+    UserName = ''
+    UserLastName = ''
     UserSaldo = 0
     UserNumber = 0
     datos = {}
@@ -27,6 +29,8 @@ class Usuario:
             self.__class__.datos['contraseña'] = contraseña_verificacion
             self.__class__.datos["saldo"] = saldo
             self.__class__.datos["numero_cuenta"] = numero_cuenta
+            self.UserName = nombre
+            self.UserLastName = apellido
             self.UserSaldo = saldo
             self.UserNumber = numero_cuenta
 
@@ -35,24 +39,16 @@ class Usuario:
             usuario_global = self
             print(usuario_global.datos)
             return True
-    def actualizar_datos(self, nombre, apellido, email, contraseña, contraseña_verificacion):
-        if not re.match("^[a-zA-Z]+$", nombre):
-            messagebox.showerror("Error", "El nombre solo debe contener letras")
-        elif not re.match("^[a-zA-Z]+$", apellido):
-            messagebox.showerror("Error", "El apellido solo debe contener letras")
-        elif len(contraseña) < 6:
+    def actualizar_datos(self, email, contraseña, contraseña_verificacion):
+        if len(contraseña) < 6:
             messagebox.showerror("Error", "La contraseña debe tener al menos 6 caracteres")
         elif contraseña != contraseña_verificacion:
             messagebox.showerror("Error", "Las contraseñas no coinciden")
         elif 'email' in self.__class__.datos and self.__class__.datos['email'] == email:
             messagebox.showerror("Error", "El correo electrónico ya está registrado")
         else:
-            self.__class__.datos['nombre'] = nombre
-            self.__class__.datos['apellido'] = apellido
             self.__class__.datos['email'] = email
             self.__class__.datos['contraseña'] = contraseña_verificacion
-            self.__class__.datos["saldo"] = self.UserSaldo
-            self.__class__.datos["numero_cuenta"] = self.UserNumber
             return True
 
     @classmethod
@@ -85,23 +81,16 @@ class Usuario:
         return contraseña
     def actualizar_saldo(self, nuevo_saldo):
         self.__class__.datos["saldo"] = nuevo_saldo
-    def realizar_transferencia(self, destinatario, monto):
+    def realizar_transferencia(self, monto):
         saldo_actual = self.obtener_saldo()
         if saldo_actual >= monto:
-            if isinstance(destinatario, Usuario):
-                saldo_destinatario = destinatario.obtener_saldo()
                 nuevo_saldo_origen = saldo_actual - monto
-                nuevo_saldo_destino = saldo_destinatario + monto
 
                 self.actualizar_saldo(nuevo_saldo_origen)
-                destinatario.actualizar_saldo(nuevo_saldo_destino)
 
                 messagebox.showinfo("Transferencia exitosa",
-                                    f"Se transfirió {monto} a {destinatario.__class__.datos['nombre']}")
+                                    f"Se transfirió {monto} $")
                 return True
-            else:
-                messagebox.showerror("Error", "El destinatario no es válido")
-                return False
         else:
             messagebox.showerror("Error", "Saldo insuficiente para realizar la transferencia")
             return False
