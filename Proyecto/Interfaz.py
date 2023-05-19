@@ -6,7 +6,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 from Proyecto.Registrar_usuario import RegisterWindow
-from Proyecto.informacion_usuario import Usuario
+from Proyecto.Informacion_usuario import Usuario
 
 class PrincipalWindow(tk.Tk):
     def __init__(self):
@@ -176,7 +176,7 @@ class TransferenciaWindow(tk.Toplevel):
             if monto > saldo_actual:
                 messagebox.showerror("Error", "No tienes suficiente saldo para realizar la transferencia.")
             else:
-                self.usuario.realizar_transferencia(destinatario, monto)
+                self.usuario.realizar_transferencia(monto)
                 self.destinatario_entry.delete(0, tk.END)
                 self.monto_entry.delete(0, tk.END)
 
@@ -225,14 +225,6 @@ class ActualizarDatosWindow(tk.Toplevel):
             "relief": "solid"
         }
 
-        tk.Label(self, text="Nombre:", **etiqueta_estilo).grid(row=0, column=1, padx=5, pady=5)
-        self.name_entry = tk.Entry(self)
-        self.name_entry.grid(row=0, column=2, padx=5, pady=5)
-
-        tk.Label(self, text="Apellido:", **etiqueta_estilo).grid(row=1, column=1, padx=5, pady=5)
-        self.apellido_entry = tk.Entry(self)
-        self.apellido_entry.grid(row=1, column=2, padx=5, pady=5)
-
         tk.Label(self, text="Email:", **etiqueta_estilo).grid(row=2, column=1, padx=5, pady=5)
         self.email_entry = tk.Entry(self)
         self.email_entry.grid(row=2, column=2, padx=5, pady=5)
@@ -257,13 +249,11 @@ class ActualizarDatosWindow(tk.Toplevel):
         return False
 
     def actualizar_usuario(self):
-        nombre = self.name_entry.get()
-        apellido = self.apellido_entry.get()
         email = self.email_entry.get()
         contraseña = self.contraseña_entry.get()
         verificar_contraseña = self.verificar_contraseña_entry.get()
 
-        if not all([nombre, apellido, email, contraseña, verificar_contraseña]):
+        if not all([email, contraseña, verificar_contraseña]):
             tk.messagebox.showerror("Error", "Todos los campos son obligatorios")
         elif not self.validar_correo(email):
             tk.messagebox.showerror("Error", "Solo se permiten correos de Gmail y Outlook")
@@ -272,7 +262,7 @@ class ActualizarDatosWindow(tk.Toplevel):
         elif contraseña != verificar_contraseña:
             tk.messagebox.showerror("Error", "Las contraseñas no coinciden")
         else:
-            if self.usuario.actualizar_datos(nombre, apellido, email, contraseña, verificar_contraseña):
+            if self.usuario.actualizar_datos(email, contraseña, verificar_contraseña):
                 tk.messagebox.showinfo("Actualización Exitosa", "Se ha actualizado los datos con éxito")
                 self.destroy()
 
@@ -306,7 +296,7 @@ class VentanaRetiro(tk.Toplevel):
             messagebox.showerror("Error", "El monto debe ser un valor numérico.")
         else:
             monto = int(monto)
-            saldo_actual = self.usuario.obtener_saldo()
+            saldo_actual = (self.usuario.obtener_saldo() - monto)
 
             # Verificar si hay suficiente saldo para el retiro
             if monto > saldo_actual:
@@ -314,6 +304,8 @@ class VentanaRetiro(tk.Toplevel):
             else:
                 self.monto_entry.delete(0, tk.END)
                 Ventana_despues_click_RETIRAR()
+                messagebox.showinfo("Retiro exitoso",
+                                    f"Se retiró {monto} $")
 
     def volver(self):
         self.destroy()
@@ -325,7 +317,7 @@ class Ventana_despues_click_RETIRAR(tk.Toplevel):
         self.geometry("600x600")
         self.configure(bg="blue")
 
-        mensaje = "Para retirar es muy sencillo.\nDirígete a un corresponsal bancario de Bancolombia y muestra este código QR.\nEl retiro se hará de acuerdo al monto que decidas."
+        mensaje = "Para recibir tu dinero en efectivo es muy sencillo.\nDirígete a un corresponsal bancario de Bancolombia y muestra este mensaje junto con tu cédula.\n¡ El pre-retiro fue exitoso !."
 
         mensaje_label = tk.Label(self, text=mensaje, font=("Arial", 12), bg="blue", fg="white")
         mensaje_label.pack(pady=50)
